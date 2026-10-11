@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>VoxelForge 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: cabeçalho fixo, hero com colagem de 3 fotos, filtro por coleção e grade de cartões de produto com seleção de cor, opção e quantidade. */
+:root {
+  --bg: #080a12;
+  --surface: #101322;
+  --stage: #05060b;
+  --line: #222845;
+  --fg: #eef1fb;
+  --muted: #98a2c4;
+  --blue: #3b82ff;
+  --magenta: #ff3fd0;
+  --grad: linear-gradient(100deg, var(--blue), var(--magenta));
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-inline: 20px;
+}
+a { color: inherit; }
+img { display: block; }
+.wrap { max-width: 1160px; margin-inline: auto; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+/* header */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  margin-inline: -20px; padding: 10px 20px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
+.brand img { width: 44px; height: 44px; border-radius: 50%; flex: none; }
+.brand b { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .02em; white-space: nowrap; }
+.nav { margin-left: auto; display: flex; align-items: center; gap: 22px; font-size: 14px; font-weight: 600; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--fg); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 999px; padding: 12px 22px;
+  background: var(--grad); color: #fff;
+  font: 700 15px/1.2 var(--body); text-decoration: none; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--fg); }
+.btn.ghost:hover { border-color: var(--blue); filter: none; }
+.btn.sm { padding: 9px 16px; font-size: 14px; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 48px; align-items: center; padding-block: 56px 48px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 16px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4.6vw, 52px); line-height: 1.08; margin: 0 0 20px; text-wrap: balance; letter-spacing: -.01em; }
+h1 em { font-style: normal; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { color: var(--muted); font-size: 18px; max-width: 46ch; margin: 0 0 28px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.tags li { font-size: 13px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
+
+.collage { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-width: 0; }
+.collage img { width: 100%; object-fit: cover; border-radius: 18px; border: 1px solid var(--line); background: var(--stage); }
+.collage .a { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+.collage .b, .collage .c { aspect-ratio: 1 / 1; }
+
+/* catalog */
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 20px; padding-top: 40px; border-top: 1px solid var(--line); }
+h2 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3vw, 32px); margin: 0 0 6px; line-height: 1.15; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0; }
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chip {
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  border-radius: 999px; padding: 8px 16px; font: 600 14px/1 var(--body); cursor: pointer;
+}
+.chip:hover { color: var(--fg); border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.search {
+  background: var(--surface); border: 1px solid var(--line); color: var(--fg);
+  border-radius: 999px; padding: 9px 16px; font: 400 14px/1 var(--body); width: 190px; max-width: 100%;
+}
+.search::placeholder { color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 22px; padding-block: 28px 56px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.stage { position: relative; aspect-ratio: 4 / 3; background: var(--stage); }
+.stage img { width: 100%; height: 100%; object-fit: contain; }
+.badge {
+  position: absolute; top: 14px; left: 14px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(8, 10, 18, .75); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px;
+}
+.thumbs { display: flex; gap: 8px; padding: 10px 14px 0; }
+.thumb { flex: 1 1 0; min-width: 0; padding: 0; border: 2px solid transparent; border-radius: 10px; background: var(--stage); cursor: pointer; overflow: hidden; }
+.thumb img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; opacity: .6; }
+.thumb[aria-current="true"] { border-color: var(--blue); }
+.thumb[aria-current="true"] img, .thumb:hover img { opacity: 1; }
+
+.body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.card h3 { font-family: var(--display); font-weight: 500; font-size: 20px; line-height: 1.2; margin: 0; }
+.card .desc { color: var(--muted); margin: 6px 0 0; font-size: 15px; }
+.specs { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; font-size: 14px; }
+.specs dt { color: var(--muted); }
+.specs dd { margin: 0; font-weight: 600; }
+
+.lbl { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.sw {
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px 6px 7px; background: transparent; color: var(--fg); font: 600 13px/1 var(--body); cursor: pointer;
+}
+.sw i { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25); }
+.sw[aria-pressed="true"] { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 16%, transparent); }
+.sw[disabled] { opacity: .45; cursor: default; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--fg); padding: 8px 14px; font: 600 14px/1.25 var(--body); cursor: pointer; text-align: left; }
+.opt small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+.opt[aria-pressed="true"] { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 16%, transparent); }
+
+.buy { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding-top: 6px; }
+.price { font-family: var(--display); font-weight: 700; font-size: 24px; font-variant-numeric: tabular-nums; margin-right: auto; }
+.price.ask { font-family: var(--body); font-size: 16px; font-weight: 700; color: var(--muted); }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; }
+.qty button { width: 34px; height: 36px; border: 0; background: transparent; color: var(--fg); font-size: 18px; cursor: pointer; border-radius: 999px; }
+.qty button:hover { color: var(--blue); }
+.qty span { min-width: 24px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.buy .btn { flex: 1 1 100%; }
+.empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 48px 0; }
+
+/* how to order */
+.how { border-top: 1px solid var(--line); padding-block: 48px 56px; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 28px; margin: 28px 0 0; padding: 0; list-style: none; counter-reset: s; }
+.steps li { counter-increment: s; padding-top: 14px; border-top: 2px solid var(--blue); }
+.steps li:nth-child(2) { border-color: color-mix(in srgb, var(--blue) 50%, var(--magenta)); }
+.steps li:nth-child(3) { border-color: var(--magenta); }
+.steps b { display: block; margin-bottom: 4px; font-size: 17px; }
+.steps span { color: var(--muted); font-size: 15px; }
+footer { border-top: 1px solid var(--line); padding-block: 28px 36px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+footer img { width: 32px; height: 32px; border-radius: 50%; }
+footer span:last-child { margin-left: auto; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 36px 32px; }
+  .nav a:not(.btn) { display: none; }
+}
+@media (max-width: 480px) {
+  .brand b { font-size: 13px; }
+  .top .btn { padding: 9px 14px; font-size: 13px; }
+  .search { width: 100%; }
+  footer span:last-child { margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card { transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: #38407a; transform: translateY(-2px); }
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#topo"><img src="img/logo.png" alt="Logo VoxelForge 3D"><b>VOXELFORGE 3D</b></a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como-pedir">Como pedir</a>
+      <a class="btn sm" data-wa="Olá! Vim pelo site da VoxelForge 3D e gostaria de fazer um pedido." href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="topo">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Impressão 3D articulada</p>
+      <h1>Peças que se mexem de verdade, <em>feitas em 3D</em></h1>
+      <p class="lead">Axolotes, cubos e dinos articulados em quatro cores. Escolha a coleção, a cor e peça pelo WhatsApp.</p>
+      <div class="cta">
+        <a class="btn" href="#catalogo">Ver o catálogo</a>
+        <a class="btn ghost" data-wa="Olá! Vim pelo site da VoxelForge 3D e gostaria de tirar uma dúvida." href="#" target="_blank" rel="noopener">Falar com a loja</a>
+      </div>
+      <ul class="tags">
+        <li>Articulado e flexível</li>
+        <li>Acabamento de alta qualidade</li>
+        <li>Ótimo para presentear</li>
+      </ul>
+    </div>
+    <div class="collage" aria-hidden="true">
+      <img class="a" src="img/aqua-hero.jpg" alt="">
+      <img class="b" src="img/cubo-hero.jpg" alt="">
+      <img class="c" src="img/dino-vermelho.jpg" alt="">
+    </div>
+  </section>
+
+  <section id="catalogo">
+    <div class="section-head">
+      <div>
+        <h2>Catálogo</h2>
+        <p class="sub" id="count">3 coleções</p>
+      </div>
+      <div class="tools">
+        <div id="chips" role="group" aria-label="Filtrar por coleção"></div>
+        <input class="search" id="q" type="search" placeholder="Buscar produto" aria-label="Buscar produto" autocomplete="off">
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="how" id="como-pedir">
+    <h2>Como pedir</h2>
+    <ol class="steps">
+      <li><b>Escolha o produto</b><span>Selecione a cor, a opção e a quantidade no cartão da coleção.</span></li>
+      <li><b>Toque em Pedir pelo WhatsApp</b><span>A mensagem já sai pronta com o que você escolheu.</span></li>
+      <li><b>Combine pagamento e entrega</b><span>A gente confirma o pedido e o prazo com você na conversa.</span></li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/logo.png" alt="">
+    <span>VoxelForge 3D</span>
+    <span>Impressão 3D articulada</span>
+  </div>
+</footer>
+
+<script>
+// Preencha o número com DDI + DDD (ex.: "5519999999999"). Vazio abre o WhatsApp para escolher o contato.
+const WHATSAPP = "5519996769502";
+
+const brl = n => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const C = { Vermelho: "#e5242f", Azul: "#2f6bff", Rosa: "#ff4fa6", Preto: "#16171c" };
+
+// preço: null mostra "Consulte o valor". Troque aqui quando definir os preços.
+const PRODUCTS = [
+  {
+    id: "aqua", tag: "Coleção Aqua", name: "Axolote Articulado",
+    desc: "Pequeno no tamanho, gigante na fofura. Brânquias detalhadas, olhos em alto relevo e cauda com movimento real.",
+    specs: [["Altura", "cerca de 5 cm"], ["Material", "PLA biodegradável"], ["Impressão", "1h30 a 2h30"], ["Ideal para", "coleção, presente e decoração"]],
+    gallery: [
+      { img: "img/aqua-hero.jpg", label: "Destaque" },
+      { img: "img/aqua-frente.jpg", label: "Vista frontal" },
+      { img: "img/aqua-lado.jpg", label: "Vista lateral" },
+      { img: "img/aqua-cauda.jpg", label: "Detalhe da cauda" }
+    ],
+    colors: ["Vermelho", "Azul", "Preto", "Rosa"].map(n => ({ name: n })),
+    options: [{ label: "Unidade", price: 29 }, { label: "Kit 4 cores", price: 109.9, kit: true, note: "uma de cada cor" }]
+  },
+  {
+    id: "cubo", tag: "Coleção Cubo", name: "Cubo Articulado",
+    desc: "O cubo que se transforma em retângulo, corrente e pirâmide. Ajuda na concentração, alivia o estresse e é ótimo para presentear.",
+    specs: [["Medidas", "5,5 × 5,5 × 5,5 cm (fechado)"], ["Material", "ABS de alta resistência"], ["Indicado para", "acima de 6 anos"], ["Acabamento", "textura antiderrapante"]],
+    gallery: [{ img: "img/cubo-hero.jpg", label: "Destaque" }],
+    colors: [
+      { name: "Vermelho", img: "img/cubo-vermelho.jpg" }, { name: "Azul", img: "img/cubo-azul.jpg" },
+      { name: "Rosa", img: "img/cubo-rosa.jpg" }, { name: "Preto", img: "img/cubo-preto.jpg" }
+    ],
+    options: [{ label: "Unidade", price: 29 }, { label: "Kit 4 cores", price: 109.9, kit: true, note: "uma de cada cor" }]
+  },
+  {
+    id: "dino", tag: "Coleção Dino", name: "Dino Articulado",
+    desc: "Diversão, movimento e estilo em cada detalhe. Impressão 3D de alta resistência com encaixes flexíveis.",
+    specs: [["Material", "impressão 3D de alta resistência"], ["Movimento", "articulado e flexível"], ["Acabamento", "detalhes precisos"], ["Ideal para", "todas as idades"]],
+    gallery: [{ img: "img/dino-vermelho.jpg", label: "Vermelho" }],
+    colors: [
+      { name: "Vermelho", img: "img/dino-vermelho.jpg" }, { name: "Azul", img: "img/dino-azul.jpg" },
+      { name: "Preto", img: "img/dino-preto.jpg" }, { name: "Rosa", img: "img/dino-rosa.jpg" }
+    ],
+    options: [{ label: "Unidade", price: 29 }, { label: "Kit 4 cores", price: 109.9, kit: true, note: "uma de cada cor" }]
+  }
+];
+
+const state = {};
+PRODUCTS.forEach(p => state[p.id] = { color: p.colors[0].name, opt: 0, qty: 1, img: p.gallery[0].img });
+
+function waLink(text) {
+  return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text);
+}
+function orderText(p) {
+  const s = state[p.id], o = p.options[s.opt];
+  if (o.kit) return `Olá! Quero ${s.qty} ${s.qty > 1 ? "kits" : "kit"} 4 cores do ${p.name} (${p.tag}). Pode me passar o valor e o prazo?`;
+  return `Olá! Quero ${s.qty} un. do ${p.name} (${p.tag}) na cor ${s.color}. Pode me passar o valor e o prazo?`;
+}
+
+function cardHTML(p) {
+  const s = state[p.id], o = p.options[s.opt];
+  const thumbs = p.gallery.length > 1 ? `<div class="thumbs">${p.gallery.map(g =>
+    `<button class="thumb" data-act="thumb" data-img="${g.img}" aria-label="${g.label}" aria-current="${g.img === s.img}"><img src="${g.img}" alt=""></button>`).join("")}</div>` : "";
+  const opts = p.options.length > 1 ? `<div><p class="lbl">Opção</p><div class="opts">${p.options.map((x, i) =>
+    `<button class="opt" data-act="opt" data-i="${i}" aria-pressed="${i === s.opt}">${x.label} · ${brl(x.price)}${x.note ? `<small>${x.note}</small>` : ""}</button>`).join("")}</div></div>` : "";
+  const sw = p.colors.map(c =>
+    `<button class="sw" data-act="color" data-c="${c.name}" aria-pressed="${!o.kit && c.name === s.color}" ${o.kit ? "disabled" : ""}><i style="background:${C[c.name]}"></i>${c.name}</button>`).join("");
+  return `
+  <article class="card" data-id="${p.id}">
+    <div class="stage"><img src="${s.img}" alt="${p.name} ${p.tag}" loading="lazy"><span class="badge">${p.tag}</span></div>
+    ${thumbs}
+    <div class="body">
+      <div><h3>${p.name}</h3><p class="desc">${p.desc}</p></div>
+      <dl class="specs">${p.specs.map(x => `<dt>${x[0]}</dt><dd>${x[1]}</dd>`).join("")}</dl>
+      ${opts}
+      <div><p class="lbl">${o.kit ? "Cores do kit" : "Cor"}</p><div class="swatches">${sw}</div></div>
+      <div class="buy">
+        <div class="price ${o.price == null ? "ask" : ""}">${o.price == null ? "Consulte o valor" : brl(o.price * s.qty)}</div>
+        <div class="qty"><button data-act="minus" aria-label="Diminuir quantidade">−</button><span aria-live="polite">${s.qty}</span><button data-act="plus" aria-label="Aumentar quantidade">+</button></div>
+        <a class="btn" href="${waLink(orderText(p))}" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+      </div>
+    </div>
+  </article>`;
+}
+
+let filter = "todos", query = "";
+function render() {
+  const list = PRODUCTS.filter(p =>
+    (filter === "todos" || p.id === filter) &&
+    (p.name + " " + p.tag + " " + p.desc).toLowerCase().includes(query.toLowerCase()));
+  document.getElementById("grid").innerHTML = list.length ? list.map(cardHTML).join("") : `<p class="empty">Nenhum produto encontrado. Tente outra busca.</p>`;
+  document.getElementById("count").textContent = list.length === 1 ? "1 coleção" : list.length + " coleções";
+}
+function renderChips() {
+  const items = [["todos", "Todos"], ...PRODUCTS.map(p => [p.id, p.tag.replace("Coleção ", "")])];
+  document.getElementById("chips").innerHTML = items.map(([id, t]) =>
+    `<button class="chip" data-f="${id}" aria-pressed="${id === filter}">${t}</button>`).join(" ");
+}
+
+document.getElementById("chips").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filter = b.dataset.f; renderChips(); render();
+});
+document.getElementById("q").addEventListener("input", e => { query = e.target.value; render(); });
+document.getElementById("grid").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const id = b.closest(".card").dataset.id, p = PRODUCTS.find(x => x.id === id), s = state[id];
+  const a = b.dataset.act;
+  if (a === "thumb") s.img = b.dataset.img;
+  if (a === "opt") s.opt = +b.dataset.i;
+  if (a === "plus") s.qty = Math.min(99, s.qty + 1);
+  if (a === "minus") s.qty = Math.max(1, s.qty - 1);
+  if (a === "color") {
+    s.color = b.dataset.c;
+    const c = p.colors.find(x => x.name === s.color);
+    if (c.img) s.img = c.img;
+  }
+  render();
+});
+document.querySelectorAll("[data-wa]").forEach(a => a.href = waLink(a.dataset.wa));
+
+renderChips(); render();
+</script>
+
+</html>
